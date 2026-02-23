@@ -1,22 +1,36 @@
 const WebSocket = require("ws");
 
-const wss = new WebSocket.Server({ port: process.env.PORT || 10000 });
+const wss = new WebSocket.Server({ port: 8080 });
 
-let clients = [];
+let clients = {};
 
-wss.on("connection", ws => {
-  clients.push(ws);
+wss.on("connection", (ws) => {
+  ws.on("message", (message) => {
+    const data = JSON.parse(message);
 
-  ws.on("message", msg => {
-    clients.forEach(c => {
-      if (c !== ws && c.readyState === WebSocket.OPEN) {
-        c.send(msg.toString());
+    if (data.type === "register") {
+      clients[data.userId] = ws;
+      console.log("Registered:", data.userId);
+    }
+
+    if (data.type === "vibrate") {
+      const target = clients[data.to];
+      if (target) {
+        target.send(JSON.stringify({
+          type: "vibrate",
+          pattern: data.pattern
+        }));
       }
-    });
+    }
   });
 
   ws.on("close", () => {
-    clients = clients.filter(c => c !== ws);
+    for (let id in clients) {
+      if (clients[id] === ws) {
+        delete clients[id];
+      }
+    }
   });
 });
 
+console.log("WebSocket running...");
