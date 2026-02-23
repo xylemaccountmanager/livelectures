@@ -196,17 +196,16 @@ async function setupSender(){
   btn.onmouseup = stopVibrate;
   btn.ontouchend = stopVibrate;
 }
-
 function startVibrate(){
-  vibrateInterval = setInterval(()=>{
-    if(dc?.readyState==="open"){
-      dc.send("vibrate");
-    }
-  },180);
+  if(dc?.readyState==="open"){
+    dc.send("start");
+  }
 }
 
 function stopVibrate(){
-  clearInterval(vibrateInterval);
+  if(dc?.readyState==="open"){
+    dc.send("stop");
+  }
 }
 
 function setupReceiver(){
