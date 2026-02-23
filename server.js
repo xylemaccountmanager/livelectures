@@ -47,6 +47,14 @@ wss.on("connection", (ws) => {
         }));
       }
     }
+
+    // --- WAVE (both directions) ---
+    if (data.type === "wave") {
+      const target = ws.role === "sender" ? clients.receiver : clients.sender;
+      if (target && target.readyState === WebSocket.OPEN) {
+        target.send(JSON.stringify({ type: "wave", from: data.from }));
+      }
+    }
   });
 
   ws.on("close", () => {
