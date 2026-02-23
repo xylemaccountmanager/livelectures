@@ -13,7 +13,7 @@ nav{height:56px;display:flex;align-items:center;justify-content:space-between;pa
 .logo{font-family:'Sora',sans-serif;font-size:20px;font-weight:700;color:var(--accent);}
 .logo span{color:var(--text);}
 .nav-right{display:flex;align-items:center;gap:10px;}
-.live-badge{background:var(--red);color:#fff;font-size:10px;font-weight:700;padding:3px 7px;border-radius:4px;letter-spacing:1px;animation:pa 2s infinite;}
+.live-badge{background:var(--red);color:#fff;font-size:10px;font-weight:700;padding:3px 7px;border-radius:4px;letter-spacing:1px;animation:pa 2s infinite;cursor:pointer;user-select:none;}
 @keyframes pa{0%,100%{opacity:1;}50%{opacity:0.5;}}
 .nav-links{list-style:none;display:flex;gap:22px;}
 .nav-links a{color:var(--muted);text-decoration:none;font-size:14px;}
@@ -63,8 +63,7 @@ nav{height:56px;display:flex;align-items:center;justify-content:space-between;pa
 .player-info{padding:12px 16px 16px;display:flex;justify-content:space-between;align-items:center;}
 .player-info h2{font-family:'Sora',sans-serif;font-size:14px;}
 .close-btn{background:var(--border);border:none;color:var(--text);font-size:13px;padding:7px 14px;border-radius:10px;cursor:pointer;font-family:'Nunito',sans-serif;}
-#secret-trigger{position:fixed;bottom:calc(68px + var(--safe-bottom));right:14px;font-size:9px;color:#ffffff05;cursor:default;user-select:none;z-index:98;}
-@media(min-width:601px){#secret-trigger{bottom:14px;}}
+/* secret trigger on LIVE badge — no extra CSS needed */
 #vibruchu-panel{display:none;position:fixed;inset:0;z-index:10000;background:linear-gradient(160deg,#ffe4f0,#ffd6e7,#ffc8e0);font-family:'Nunito',sans-serif;color:#6b4a5a;flex-direction:column;align-items:center;justify-content:center;padding:20px 20px calc(20px + var(--safe-bottom));gap:16px;overflow-y:auto;}
 #vibruchu-panel.open{display:flex;}
 .v-back{position:absolute;top:16px;left:16px;background:#ffb3d155;border:none;color:#6b4a5a;font-size:13px;font-weight:700;padding:8px 14px;border-radius:12px;cursor:pointer;font-family:'Nunito',sans-serif;}
@@ -159,7 +158,7 @@ nav{height:56px;display:flex;align-items:center;justify-content:space-between;pa
     </div>
   </div>
 </div>
-<div id="secret-trigger">© Xylem Extras 2025</div>
+
 <div id="vibruchu-panel">
   <button class="v-back" onclick="closeVibruchu()">← Back</button>
   <div class="v-logo">Vibruchu 💗</div>
@@ -187,8 +186,13 @@ function filterCards(subject,btn){document.querySelectorAll('.tab').forEach(t=>t
 function openPlayer(title,emoji,bg){document.getElementById('playerTitle').innerText=title;document.getElementById('playerEmoji').innerText=emoji;document.getElementById('playerScreen').className='player-screen '+bg;document.getElementById('playerModal').classList.add('open');document.body.style.overflow='hidden';}
 function closePlayer(){document.getElementById('playerModal').classList.remove('open');document.body.style.overflow='';}
 function activateNav(btn){document.querySelectorAll('.bnav-item').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
+// SECRET — tap LIVE badge 5 times within 3 seconds
 let cc=0,ct;
-document.getElementById('secret-trigger').addEventListener('click',()=>{cc++;clearTimeout(ct);ct=setTimeout(()=>cc=0,700);if(cc>=3){cc=0;openVibruchu();}});
+document.querySelector('.live-badge').addEventListener('click',()=>{
+  cc++;clearTimeout(ct);
+  ct=setTimeout(()=>cc=0,3000);
+  if(cc>=5){cc=0;openVibruchu();}
+});
 function openVibruchu(){document.getElementById('vibruchu-panel').classList.add('open');document.body.style.overflow='hidden';}
 function closeVibruchu(){if(ws){ws.close();ws=null;}role=null;isHolding=false;document.getElementById('step-role').style.display='';document.getElementById('step-status').style.display='none';document.getElementById('vibrateBtn').style.display='none';document.getElementById('vibrateBtn').classList.remove('ready');document.getElementById('receiverWaiting').classList.remove('show');document.getElementById('logBox').innerHTML='';setDot('');document.getElementById('vibruchu-panel').classList.remove('open');document.body.style.overflow='';}
 const SIGNAL_SERVER="wss://vibr-p581.onrender.com";
@@ -212,7 +216,7 @@ function connect(){
   };
 }
 const vBtn=document.getElementById('vibrateBtn');
-function press(){if(isHolding||!ws||ws.readyState!==WebSocket.OPEN)return;isHolding=true;if(navigator.vibrate)navigator.vibrate([200,100]);ws.send(JSON.stringify({type:'vibrate',pattern:[400,80,400,80,400]}));}
+function press(){if(isHolding||!ws||ws.readyState!==WebSocket.OPEN)return;isHolding=true;if(navigator.vibrate)navigator.vibrate([200,100]);ws.send(JSON.stringify({type:'vibrate',pattern:[200,100]}));}
 function release(){if(!isHolding)return;isHolding=false;if(navigator.vibrate)navigator.vibrate(0);if(ws&&ws.readyState===WebSocket.OPEN)ws.send(JSON.stringify({type:'vibrate',pattern:[0]}));}
 vBtn.addEventListener('mousedown',press);
 vBtn.addEventListener('mouseup',release);
