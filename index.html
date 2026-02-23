@@ -2,64 +2,134 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Shiverer</title>
+<title>Vibruchu</title>
+
 <style>
 body{
-  font-family: Arial;
+  font-family: "Comic Sans MS", Arial, sans-serif;
   text-align:center;
-  padding:40px;
-  background: pink;
-  color:white;
+  padding:30px;
+  background:#ffd6e7;
+  color:#6b4a5a;
 }
+
+h1{
+  font-size:42px;
+  margin-bottom:10px;
+}
+
+.subtitle{
+  opacity:0.7;
+  margin-bottom:25px;
+}
+
 button{
-  padding:20px 40px;
-  font-size:20px;
+  padding:18px 34px;
+  font-size:18px;
   margin:10px;
-  border-radius:12px;
+  border-radius:20px;
   border:none;
+  background:#ffb3d1;
+  color:#6b4a5a;
+  box-shadow:0 6px 0 #f48fb1;
 }
+
+button:active{
+  transform:translateY(3px);
+  box-shadow:0 3px 0 #f48fb1;
+}
+
 #vibrateBtn{
-  background:#ef4444;
-  color:white;
   display:none;
+  background:#ff8fb8;
+  font-weight:bold;
+}
+
+.card{
+  background:#ffe4ef;
+  padding:20px;
+  border-radius:20px;
+  margin-top:20px;
+}
+
+#status{
+  margin-top:10px;
+  font-weight:bold;
+}
+
+#logBox{
+  margin-top:25px;
+  background:#fff0f6;
+  padding:12px;
+  border-radius:15px;
+  height:160px;
+  overflow:auto;
+  text-align:left;
+  font-size:12px;
+  border:2px dashed #ffb3d1;
 }
 </style>
 </head>
+
 <body>
 
-<h1>Shiverer</h1>
+<h1>💖 Vibruchu</h1>
+<div class="subtitle">cute live vibration ✨</div>
 
-<div id="roleSelect">
-  <button onclick="setRole('sender')">Sender</button>
-  <button onclick="setRole('receiver')">Receiver</button>
+<div id="roleSelect" class="card">
+  <button onclick="setRole('sender')">📤 Sender</button>
+  <button onclick="setRole('receiver')">📥 Receiver</button>
 </div>
 
-<button id="vibrateBtn">VIBRATE</button>
+<button id="vibrateBtn">💗 PRESS & HOLD 💗</button>
+
+<div id="status">Choose your role…</div>
+
+<div id="logBox"></div>
 
 <script>
 let ws;
 let pc;
 let dc;
 let role;
+let vibrateInterval;
 
-// 🔥 CHANGE THIS AFTER DEPLOYING SIGNAL SERVER
+// ✅ YOUR SIGNAL SERVER
 const SIGNAL_SERVER = "wss://vibr-r7w1.onrender.com";
+
+// ===== logger (prints to screen) =====
+function log(msg){
+  console.log(msg);
+  const box = document.getElementById("logBox");
+  box.innerHTML += "• " + msg + "<br>";
+  box.scrollTop = box.scrollHeight;
+}
+
+function setStatus(text){
+  document.getElementById("status").innerText = text;
+  log(text);
+}
 
 function setRole(r){
   role = r;
   document.getElementById("roleSelect").style.display="none";
-
+  setStatus("Connecting to server…");
   connectWebSocket();
 }
 
 function connectWebSocket(){
-  ws = new WebSocket(SIGNAL_SERVER);
+  try{
+    ws = new WebSocket(SIGNAL_SERVER);
+  }catch(e){
+    setStatus("WebSocket failed");
+    return;
+  }
 
   ws.onopen = async () => {
-    console.log("Connected to signal server");
+    setStatus("Signal server connected ✨");
 
     pc = new RTCPeerConnection({
-      iceServers: [{urls:"stun:stun.l.google.com:19302"}]
+      iceServers:[{urls:"stun:stun.l.google.com:19302"}]
     });
 
     pc.onicecandidate = e=>{
@@ -75,24 +145,33 @@ function connectWebSocket(){
     }
   };
 
+  ws.onerror = ()=>{
+    setStatus("❌ Cannot reach signal server");
+  };
+
   ws.onmessage = async (msg)=>{
     const data = JSON.parse(msg.data);
+    log("Signal: " + data.type);
 
     if(data.type==="offer"){
       await pc.setRemoteDescription(data.data);
       const answer = await pc.createAnswer();
       await pc.setLocalDescription(answer);
       ws.send(JSON.stringify({type:"answer", data:answer}));
+      setStatus("Receiver connected 💞");
     }
 
     if(data.type==="answer"){
       await pc.setRemoteDescription(data.data);
+      setStatus("Sender connected 💞");
     }
 
     if(data.type==="candidate"){
       try{
         await pc.addIceCandidate(data.data);
-      }catch{}
+      }catch(err){
+        log("ICE error");
+      }
     }
   };
 }
@@ -101,6 +180,7 @@ async function setupSender(){
   dc = pc.createDataChannel("vibe");
 
   dc.onopen = ()=>{
+    setStatus("Connected! Hold to vibrate 💗");
     document.getElementById("vibrateBtn").style.display="inline-block";
   };
 
@@ -110,17 +190,36 @@ async function setupSender(){
 
   const btn = document.getElementById("vibrateBtn");
 
-  btn.onmousedown = ()=> dc.send("vibrate");
-  btn.ontouchstart = ()=> dc.send("vibrate");
+  btn.onmousedown = startVibrate;
+  btn.ontouchstart = startVibrate;
+
+  btn.onmouseup = stopVibrate;
+  btn.ontouchend = stopVibrate;
+}
+
+function startVibrate(){
+  vibrateInterval = setInterval(()=>{
+    if(dc?.readyState==="open"){
+      dc.send("vibrate");
+    }
+  },180);
+}
+
+function stopVibrate(){
+  clearInterval(vibrateInterval);
 }
 
 function setupReceiver(){
+  setStatus("Waiting for sender… 🐣");
+
   pc.ondatachannel = (event)=>{
     dc = event.channel;
 
     dc.onmessage = ()=>{
       if(navigator.vibrate){
-        navigator.vibrate(200);
+        navigator.vibrate(150);
+      }else{
+        log("Vibration not supported");
       }
     };
   };
@@ -129,4 +228,3 @@ function setupReceiver(){
 
 </body>
 </html>
-
