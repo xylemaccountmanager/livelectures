@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Live Vibrate</title>
+<style>
+body{
+  font-family: Arial;
+  text-align:center;
+  padding:40px;
+  background:#0f172a;
+  color:white;
+}
+button{
+  padding:20px 40px;
+  font-size:20px;
+  margin:10px;
+  border-radius:12px;
+  border:none;
+}
+#vibrateBtn{
+  background:#ef4444;
+  color:white;
+  display:none;
+}
+</style>
+</head>
+<body>
+
+<h1>Live Vibrate</h1>
+
+<div id="roleSelect">
+  <button onclick="setRole('sender')">Sender</button>
+  <button onclick="setRole('receiver')">Receiver</button>
+</div>
+
+<button id="vibrateBtn">VIBRATE</button>
+
+<script>
+let ws;
+let pc;
+let dc;
+let role;
+
+// 🔥 CHANGE THIS AFTER DEPLOYING SIGNAL SERVER
+const SIGNAL_SERVER = "wss://YOUR-SIGNAL-SERVER.onrender.com";
+
+function setRole(r){
+  role = r;
+  document.getElementById("roleSelect").style.display="none";
+
+  connectWebSocket();
+}
+
+function connectWebSocket(){
+  ws = new WebSocket(SIGNAL_SERVER);
+
+  ws.onopen = async () => {
+    console.log("Connected to signal server");
+
+    pc = new RTCPeerConnection({
+      iceServers: [{urls:"stun:stun.l.google.com:19302"}]
+    });
+
+    pc.onicecandidate = e=>{
+      if(e.candidate){
+        ws.send(JSON.stringify({type:"candidate", data:e.candidate}));
+      }
+    };
+
+    if(role==="sender"){
+      setupSender();
+    }else{
+      setupReceiver();
+    }
+  };
+
+  ws.onmessage = async (msg)=>{
+    const data = JSON.parse(msg.data);
+
+    if(data.type==="offer"){
+      await pc.setRemoteDescription(data.data);
+      const answer = await pc.createAnswer();
+      await pc.setLocalDescription(answer);
+      ws.send(JSON.stringify({type:"answer", data:answer}));
+    }
+
+    if(data.type==="answer"){
+      await pc.setRemoteDescription(data.data);
+    }
+
+    if(data.type==="candidate"){
+      try{
+        await pc.addIceCandidate(data.data);
+      }catch{}
+    }
+  };
+}
+
+async function setupSender(){
+  dc = pc.createDataChannel("vibe");
+
+  dc.onopen = ()=>{
+    document.getElementById("vibrateBtn").style.display="inline-block";
+  };
+
+  const offer = await pc.createOffer();
+  await pc.setLocalDescription(offer);
+  ws.send(JSON.stringify({type:"offer", data:offer}));
+
+  const btn = document.getElementById("vibrateBtn");
+
+  btn.onmousedown = ()=> dc.send("vibrate");
+  btn.ontouchstart = ()=> dc.send("vibrate");
+}
+
+function setupReceiver(){
+  pc.ondatachannel = (event)=>{
+    dc = event.channel;
+
+    dc.onmessage = ()=>{
+      if(navigator.vibrate){
+        navigator.vibrate(200);
+      }
+    };
+  };
+}
+</script>
+
+</body>
+</html>
+
