@@ -1,701 +1,225 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0d1117">
 <title>Xylem Extras – Live Lectures</title>
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
-
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root{
-  --bg:#0d1117;
-  --card:#161b22;
-  --border:#21262d;
-  --accent:#2ecc71;
-  --accent2:#27ae60;
-  --text:#e6edf3;
-  --muted:#7d8590;
-  --red:#e74c3c;
-  --blue:#3498db;
-  --yellow:#f1c40f;
-}
-
-*{box-sizing:border-box;margin:0;padding:0;}
-
-body{
-  font-family:'DM Sans',sans-serif;
-  background:var(--bg);
-  color:var(--text);
-  min-height:100vh;
-}
-
-/* ---- NAVBAR ---- */
-nav{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:14px 36px;
-  border-bottom:1px solid var(--border);
-  background:#0d1117ee;
-  position:sticky;top:0;z-index:100;
-  backdrop-filter:blur(10px);
-}
-
-.logo{
-  font-family:'Sora',sans-serif;
-  font-size:22px;
-  font-weight:700;
-  color:var(--accent);
-  letter-spacing:-0.5px;
-}
-
+:root{--bg:#0d1117;--card:#161b22;--border:#21262d;--accent:#2ecc71;--text:#e6edf3;--muted:#7d8590;--red:#e74c3c;--blue:#3498db;--yellow:#f1c40f;--safe-bottom:env(safe-area-inset-bottom,0px);}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+nav{height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;border-bottom:1px solid var(--border);background:#0d1117f0;position:sticky;top:0;z-index:100;backdrop-filter:blur(12px);}
+.logo{font-family:'Sora',sans-serif;font-size:20px;font-weight:700;color:var(--accent);}
 .logo span{color:var(--text);}
-
-nav ul{
-  list-style:none;
-  display:flex;
-  gap:28px;
-}
-
-nav ul li a{
-  color:var(--muted);
-  text-decoration:none;
-  font-size:14px;
-  transition:color 0.2s;
-}
-
-nav ul li a:hover{color:var(--text);}
-
-.live-badge{
-  background:var(--red);
-  color:#fff;
-  font-size:11px;
-  font-weight:700;
-  padding:3px 8px;
-  border-radius:4px;
-  letter-spacing:1px;
-  animation:pulse 2s infinite;
-}
-
-@keyframes pulse{
-  0%,100%{opacity:1;}
-  50%{opacity:0.6;}
-}
-
-/* ---- HERO ---- */
-.hero{
-  padding:60px 36px 40px;
-  max-width:1100px;
-  margin:0 auto;
-}
-
-.hero h1{
-  font-family:'Sora',sans-serif;
-  font-size:42px;
-  font-weight:700;
-  line-height:1.15;
-  margin-bottom:14px;
-}
-
-.hero h1 em{
-  color:var(--accent);
-  font-style:normal;
-}
-
-.hero p{
-  color:var(--muted);
-  font-size:16px;
-  max-width:520px;
-  line-height:1.7;
-}
-
-/* ---- SUBJECT TABS ---- */
-.tabs{
-  display:flex;
-  gap:10px;
-  padding:0 36px;
-  max-width:1100px;
-  margin:30px auto 0;
-}
-
-.tab{
-  padding:9px 22px;
-  border-radius:8px;
-  font-size:14px;
-  font-weight:500;
-  border:1px solid var(--border);
-  background:transparent;
-  color:var(--muted);
-  cursor:pointer;
-  transition:all 0.2s;
-}
-
-.tab.active, .tab:hover{
-  border-color:var(--accent);
-  color:var(--accent);
-  background:#2ecc7115;
-}
-
+.nav-right{display:flex;align-items:center;gap:10px;}
+.live-badge{background:var(--red);color:#fff;font-size:10px;font-weight:700;padding:3px 7px;border-radius:4px;letter-spacing:1px;animation:pa 2s infinite;}
+@keyframes pa{0%,100%{opacity:1;}50%{opacity:0.5;}}
+.nav-links{list-style:none;display:flex;gap:22px;}
+.nav-links a{color:var(--muted);text-decoration:none;font-size:14px;}
+@media(max-width:600px){.nav-links{display:none;}}
+.hero{padding:24px 16px 12px;}
+.hero h1{font-family:'Sora',sans-serif;font-size:clamp(22px,6vw,40px);font-weight:700;line-height:1.2;margin-bottom:8px;}
+.hero h1 em{color:var(--accent);font-style:normal;}
+.hero p{color:var(--muted);font-size:14px;line-height:1.6;}
+.tabs{display:flex;gap:8px;padding:14px 16px 0;overflow-x:auto;scrollbar-width:none;}
+.tabs::-webkit-scrollbar{display:none;}
+.tab{flex-shrink:0;padding:8px 16px;border-radius:20px;font-size:13px;font-weight:700;border:1.5px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-family:'Nunito',sans-serif;transition:all 0.2s;}
+.tab.active{border-color:var(--accent);color:var(--accent);background:#2ecc7115;}
 .tab.physics.active{border-color:var(--blue);color:var(--blue);background:#3498db15;}
 .tab.chemistry.active{border-color:var(--yellow);color:var(--yellow);background:#f1c40f15;}
-.tab.maths.active{border-color:var(--accent);color:var(--accent);background:#2ecc7115;}
-
-/* ---- LECTURE GRID ---- */
-.grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
-  gap:18px;
-  padding:28px 36px;
-  max-width:1100px;
-  margin:0 auto;
-}
-
-.lecture-card{
-  background:var(--card);
-  border:1px solid var(--border);
-  border-radius:14px;
-  overflow:hidden;
-  cursor:pointer;
-  transition:transform 0.2s, border-color 0.2s;
-}
-
-.lecture-card:hover{
-  transform:translateY(-3px);
-  border-color:#444;
-}
-
-.thumb{
-  width:100%;
-  height:165px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:52px;
-  position:relative;
-}
-
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;padding:14px 16px;}
+@media(max-width:380px){.grid{grid-template-columns:1fr;}}
+.lecture-card{background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;cursor:pointer;transition:transform 0.15s;}
+.lecture-card:active{transform:scale(0.97);}
+.thumb{width:100%;height:148px;display:flex;align-items:center;justify-content:center;font-size:46px;position:relative;}
 .thumb.physics-bg{background:linear-gradient(135deg,#0d2137,#1a3a5c);}
 .thumb.chemistry-bg{background:linear-gradient(135deg,#1a1a00,#3a3a00);}
 .thumb.maths-bg{background:linear-gradient(135deg,#0d2214,#1a4a2a);}
-
-.live-dot{
-  position:absolute;
-  top:10px;left:10px;
-  background:var(--red);
-  color:#fff;
-  font-size:10px;
-  font-weight:700;
-  padding:3px 8px;
-  border-radius:4px;
-  letter-spacing:1px;
-}
-
-.viewer-count{
-  position:absolute;
-  bottom:10px;right:10px;
-  background:#00000088;
-  color:#fff;
-  font-size:11px;
-  padding:3px 8px;
-  border-radius:4px;
-}
-
-.card-body{
-  padding:16px;
-}
-
-.card-body h3{
-  font-family:'Sora',sans-serif;
-  font-size:15px;
-  font-weight:600;
-  margin-bottom:5px;
-}
-
-.card-body p{
-  color:var(--muted);
-  font-size:12px;
-  line-height:1.6;
-}
-
-.subject-tag{
-  display:inline-block;
-  font-size:10px;
-  font-weight:700;
-  padding:2px 8px;
-  border-radius:4px;
-  margin-bottom:8px;
-  letter-spacing:0.5px;
-}
-
-.tag-physics{background:#3498db22;color:var(--blue);}
-.tag-chemistry{background:#f1c40f22;color:var(--yellow);}
-.tag-maths{background:#2ecc7122;color:var(--accent);}
-
-/* ---- VIDEO PLAYER MODAL ---- */
-.modal{
-  display:none;
-  position:fixed;inset:0;
-  background:#000000cc;
-  z-index:999;
-  align-items:center;
-  justify-content:center;
-}
-
+.live-dot{position:absolute;top:9px;left:9px;background:var(--red);color:#fff;font-size:9px;font-weight:700;padding:2px 7px;border-radius:4px;letter-spacing:1px;}
+.viewer-count{position:absolute;bottom:9px;right:9px;background:#00000090;color:#fff;font-size:11px;padding:2px 8px;border-radius:4px;}
+.card-body{padding:13px;}
+.card-body h3{font-family:'Sora',sans-serif;font-size:14px;font-weight:600;margin-bottom:4px;line-height:1.4;}
+.card-body p{color:var(--muted);font-size:12px;line-height:1.55;}
+.subject-tag{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;margin-bottom:7px;letter-spacing:0.5px;}
+.tag-physics{background:#3498db20;color:var(--blue);}
+.tag-chemistry{background:#f1c40f20;color:var(--yellow);}
+.tag-maths{background:#2ecc7120;color:var(--accent);}
+.bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:#161b22f0;border-top:1px solid var(--border);backdrop-filter:blur(12px);padding:6px 0 calc(6px + var(--safe-bottom));z-index:99;}
+.bottom-nav-inner{display:flex;justify-content:space-around;}
+.bnav-item{display:flex;flex-direction:column;align-items:center;gap:2px;color:var(--muted);font-size:11px;font-weight:700;background:none;border:none;cursor:pointer;padding:4px 10px;font-family:'Nunito',sans-serif;}
+.bnav-item span{font-size:20px;}
+.bnav-item.active{color:var(--accent);}
+@media(max-width:600px){.bottom-nav{display:block;}body{padding-bottom:calc(62px + var(--safe-bottom));}}
+.modal{display:none;position:fixed;inset:0;background:#000c;z-index:999;align-items:flex-end;justify-content:center;}
 .modal.open{display:flex;}
-
-.player{
-  background:var(--card);
-  border:1px solid var(--border);
-  border-radius:20px;
-  width:min(750px,95vw);
-  overflow:hidden;
-}
-
-.player-screen{
-  width:100%;
-  height:380px;
-  background:#000;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:70px;
-  flex-direction:column;
-  gap:16px;
-  position:relative;
-}
-
-.player-screen p{
-  font-size:14px;
-  color:var(--muted);
-  font-family:'DM Sans',sans-serif;
-}
-
-.progress-bar{
-  width:90%;
-  height:4px;
-  background:#333;
-  border-radius:2px;
-  position:absolute;
-  bottom:20px;
-}
-
-.progress-fill{
-  height:100%;
-  background:var(--accent);
-  border-radius:2px;
-  width:37%;
-  animation:progress 20s linear infinite;
-}
-
-@keyframes progress{
-  0%{width:37%;}
-  100%{width:99%;}
-}
-
-.player-info{
-  padding:20px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
-
-.player-info h2{
-  font-family:'Sora',sans-serif;
-  font-size:17px;
-}
-
-.close-btn{
-  background:var(--border);
-  border:none;
-  color:var(--text);
-  font-size:14px;
-  padding:8px 18px;
-  border-radius:8px;
-  cursor:pointer;
-}
-
-/* ---- HIDDEN VIBRUCHU ZONE ---- */
-/* Disguised as a "copyright footer text" - triple-click to activate */
-#secret-trigger{
-  position:fixed;
-  bottom:18px;
-  right:20px;
-  font-size:10px;
-  color:#ffffff08;
-  cursor:default;
-  user-select:none;
-  z-index:10;
-}
-
-/* The real vibruchu panel */
-#vibruchu-panel{
-  display:none;
-  position:fixed;
-  inset:0;
-  background:#ffd6e7;
-  z-index:9999;
-  font-family:"Comic Sans MS",Arial,sans-serif;
-  text-align:center;
-  padding:40px;
-  color:#6b4a5a;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-}
-
+.player{background:var(--card);border:1px solid var(--border);border-radius:20px 20px 0 0;width:100%;max-width:700px;}
+.drag-handle{width:36px;height:4px;background:#444;border-radius:2px;margin:10px auto 0;}
+.player-screen{width:100%;height:min(52vw,340px);background:#000;display:flex;align-items:center;justify-content:center;font-size:clamp(38px,10vw,68px);flex-direction:column;gap:10px;position:relative;}
+.player-screen p{font-size:13px;color:var(--muted);font-family:'Nunito',sans-serif;}
+.progress-bar{width:88%;height:3px;background:#333;border-radius:2px;position:absolute;bottom:14px;}
+.progress-fill{height:100%;background:var(--accent);border-radius:2px;width:37%;animation:prog 20s linear infinite;}
+@keyframes prog{0%{width:37%;}100%{width:99%;}}
+.player-info{padding:12px 16px 16px;display:flex;justify-content:space-between;align-items:center;}
+.player-info h2{font-family:'Sora',sans-serif;font-size:14px;}
+.close-btn{background:var(--border);border:none;color:var(--text);font-size:13px;padding:7px 14px;border-radius:10px;cursor:pointer;font-family:'Nunito',sans-serif;}
+#secret-trigger{position:fixed;bottom:calc(68px + var(--safe-bottom));right:14px;font-size:9px;color:#ffffff05;cursor:default;user-select:none;z-index:98;}
+@media(min-width:601px){#secret-trigger{bottom:14px;}}
+#vibruchu-panel{display:none;position:fixed;inset:0;z-index:10000;background:linear-gradient(160deg,#ffe4f0,#ffd6e7,#ffc8e0);font-family:'Nunito',sans-serif;color:#6b4a5a;flex-direction:column;align-items:center;justify-content:center;padding:20px 20px calc(20px + var(--safe-bottom));gap:16px;overflow-y:auto;}
 #vibruchu-panel.open{display:flex;}
-
-#vibruchu-panel h1{font-size:42px;margin-bottom:8px;}
-#vibruchu-panel .subtitle{opacity:0.7;margin-bottom:25px;}
-
-#roleSelect{
-  background:#ffe4ef;
-  padding:20px;
-  border-radius:20px;
-  margin-bottom:16px;
-}
-
-#roleSelect button{
-  padding:18px 34px;
-  font-size:18px;
-  margin:10px;
-  border-radius:20px;
-  border:none;
-  background:#ffb3d1;
-  color:#6b4a5a;
-  box-shadow:0 6px 0 #f48fb1;
-  cursor:pointer;
-}
-
-#roleSelect button:active{
-  transform:translateY(3px);
-  box-shadow:0 3px 0 #f48fb1;
-}
-
-#vibrateBtn{
-  padding:18px 34px;
-  font-size:18px;
-  border-radius:20px;
-  border:none;
-  background:#ff8fb8;
-  color:#6b4a5a;
-  font-weight:bold;
-  box-shadow:0 6px 0 #f48fb1;
-  cursor:pointer;
-  opacity:0.5;
-  margin:10px;
-}
-
-#vibrateBtn:active{
-  transform:translateY(3px);
-  box-shadow:0 3px 0 #f48fb1;
-}
-
-#v-status{margin-top:10px;font-weight:bold;}
-
-#logBox{
-  margin-top:25px;
-  background:#fff0f6;
-  padding:12px;
-  border-radius:15px;
-  height:130px;
-  overflow:auto;
-  text-align:left;
-  font-size:12px;
-  border:2px dashed #ffb3d1;
-  width:min(420px,90vw);
-}
-
-#back-btn{
-  margin-top:20px;
-  padding:10px 24px;
-  border-radius:14px;
-  border:none;
-  background:#ffb3d1;
-  color:#6b4a5a;
-  font-size:14px;
-  cursor:pointer;
-  box-shadow:0 4px 0 #f48fb1;
-}
+.v-back{position:absolute;top:16px;left:16px;background:#ffb3d155;border:none;color:#6b4a5a;font-size:13px;font-weight:700;padding:8px 14px;border-radius:12px;cursor:pointer;font-family:'Nunito',sans-serif;}
+.v-logo{font-family:'Sora',sans-serif;font-size:clamp(30px,8vw,46px);font-weight:700;color:#c0396b;letter-spacing:-1px;}
+.v-sub{font-size:13px;opacity:0.65;margin-top:-10px;}
+.v-status-bar{display:flex;align-items:center;gap:8px;background:#fff5f9;padding:10px 18px;border-radius:14px;font-size:13px;font-weight:600;border:1.5px solid #ffb3d1;min-width:200px;justify-content:center;}
+#v-dot{width:10px;height:10px;border-radius:50%;background:#ddd;flex-shrink:0;transition:background 0.3s;}
+#v-dot.waiting{background:var(--yellow);animation:pa 1s infinite;}
+#v-dot.connected{background:#2ecc71;box-shadow:0 0 8px #2ecc71aa;}
+#v-dot.error{background:var(--red);}
+.v-role-card{background:#fff5f9;border:2px dashed #ffb3d1;border-radius:20px;padding:22px;text-align:center;width:min(320px,92vw);}
+.v-role-card p{font-size:14px;margin-bottom:14px;font-weight:600;opacity:0.8;}
+.v-role-btns{display:flex;gap:10px;justify-content:center;}
+.v-btn{padding:13px 24px;font-size:16px;font-weight:700;border-radius:16px;border:none;background:#ffb3d1;color:#6b4a5a;box-shadow:0 5px 0 #f48fb1;cursor:pointer;font-family:'Nunito',sans-serif;min-width:110px;transition:transform 0.08s,box-shadow 0.08s;}
+.v-btn:active{transform:translateY(3px);box-shadow:0 2px 0 #f48fb1;}
+#vibrateBtn{width:min(220px,68vw);height:min(220px,68vw);border-radius:50%;border:none;background:radial-gradient(circle at 38% 35%,#ff8fb8,#f06090);color:#fff;font-family:'Sora',sans-serif;font-size:clamp(13px,4vw,17px);font-weight:700;letter-spacing:1px;box-shadow:0 8px 0 #c0396b,0 0 40px #ff8fb855;cursor:pointer;opacity:0.38;pointer-events:none;transition:opacity 0.3s,transform 0.08s,box-shadow 0.08s;display:none;flex-direction:column;align-items:center;justify-content:center;gap:5px;text-align:center;line-height:1.3;}
+#vibrateBtn .btn-icon{font-size:clamp(26px,8vw,36px);}
+#vibrateBtn.ready{opacity:1;pointer-events:all;animation:float 3s ease-in-out infinite;}
+#vibrateBtn.ready:active{transform:scale(0.92) translateY(4px);box-shadow:0 4px 0 #c0396b,0 0 60px #ff8fb8bb;animation:none;}
+@keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-7px);}}
+.v-receiver-waiting{display:none;flex-direction:column;align-items:center;gap:10px;}
+.v-receiver-waiting.show{display:flex;}
+.heartbeat{font-size:clamp(52px,15vw,72px);animation:hb 1.3s ease-in-out infinite;}
+@keyframes hb{0%,100%{transform:scale(1);}14%{transform:scale(1.28);}28%{transform:scale(1);}42%{transform:scale(1.14);}}
+.v-receiver-waiting p{font-size:14px;opacity:0.7;font-weight:600;}
+#logBox{background:#fff5f9;padding:10px 12px;border-radius:14px;height:82px;overflow:auto;text-align:left;font-size:11px;border:1.5px dashed #ffb3d1;width:min(320px,92vw);color:#9b6a7a;}
 </style>
 </head>
-
 <body>
-
-<!-- ===== XYLEM EXTRAS UI ===== -->
 <nav>
   <div class="logo">Xylem<span>Extras</span></div>
-  <ul>
-    <li><a href="#">Home</a></li>
-    <li><a href="#">Schedule</a></li>
-    <li><a href="#">Notes</a></li>
-    <li><a href="#">Tests</a></li>
-  </ul>
-  <span class="live-badge">● LIVE</span>
+  <div class="nav-right">
+    <ul class="nav-links"><li><a href="#">Home</a></li><li><a href="#">Schedule</a></li><li><a href="#">Notes</a></li><li><a href="#">Tests</a></li></ul>
+    <span class="live-badge">● LIVE</span>
+  </div>
 </nav>
-
 <div class="hero">
   <h1>Learn from the<br><em>best educators,</em> live.</h1>
-  <p>Stream Physics, Chemistry and Mathematics lectures in real-time. Ask doubts, revise chapters, and ace your exams.</p>
+  <p>Stream Physics, Chemistry and Maths lectures in real-time.</p>
 </div>
-
 <div class="tabs">
   <button class="tab active" onclick="filterCards('all',this)">All</button>
   <button class="tab physics" onclick="filterCards('physics',this)">⚡ Physics</button>
   <button class="tab chemistry" onclick="filterCards('chemistry',this)">🧪 Chemistry</button>
-  <button class="tab maths" onclick="filterCards('maths',this)">∑ Mathematics</button>
+  <button class="tab maths" onclick="filterCards('maths',this)">∑ Maths</button>
 </div>
-
 <div class="grid" id="lectureGrid">
-
-  <div class="lecture-card" data-subject="physics" onclick="openPlayer('Electromagnetic Induction – Class XII','⚡','physics-bg')">
+  <div class="lecture-card" data-subject="physics" onclick="openPlayer('Electromagnetic Induction','⚡','physics-bg')">
     <div class="thumb physics-bg">⚡<div class="live-dot">LIVE</div><div class="viewer-count">👁 2,341</div></div>
-    <div class="card-body">
-      <div class="subject-tag tag-physics">PHYSICS</div>
-      <h3>Electromagnetic Induction – Class XII</h3>
-      <p>Faraday's law, Lenz's law, and self-inductance explained with derivations.</p>
-    </div>
+    <div class="card-body"><div class="subject-tag tag-physics">PHYSICS</div><h3>Electromagnetic Induction – Class XII</h3><p>Faraday's law, Lenz's law and self-inductance with derivations.</p></div>
   </div>
-
-  <div class="lecture-card" data-subject="chemistry" onclick="openPlayer('Chemical Bonding & Molecular Structure','🧪','chemistry-bg')">
+  <div class="lecture-card" data-subject="chemistry" onclick="openPlayer('Chemical Bonding','🧪','chemistry-bg')">
     <div class="thumb chemistry-bg">🧪<div class="live-dot">LIVE</div><div class="viewer-count">👁 1,879</div></div>
-    <div class="card-body">
-      <div class="subject-tag tag-chemistry">CHEMISTRY</div>
-      <h3>Chemical Bonding & Molecular Structure</h3>
-      <p>VSEPR theory, hybridisation, and bond polarity with practice MCQs.</p>
-    </div>
+    <div class="card-body"><div class="subject-tag tag-chemistry">CHEMISTRY</div><h3>Chemical Bonding & Molecular Structure</h3><p>VSEPR theory, hybridisation and bond polarity with MCQs.</p></div>
   </div>
-
-  <div class="lecture-card" data-subject="maths" onclick="openPlayer('Integrals – Definite & Indefinite','∫','maths-bg')">
+  <div class="lecture-card" data-subject="maths" onclick="openPlayer('Integrals','∫','maths-bg')">
     <div class="thumb maths-bg">∫<div class="live-dot">LIVE</div><div class="viewer-count">👁 3,102</div></div>
-    <div class="card-body">
-      <div class="subject-tag tag-maths">MATHEMATICS</div>
-      <h3>Integrals – Definite & Indefinite</h3>
-      <p>Properties, substitution method, integration by parts and area under curves.</p>
-    </div>
+    <div class="card-body"><div class="subject-tag tag-maths">MATHEMATICS</div><h3>Integrals – Definite & Indefinite</h3><p>Substitution, integration by parts, area under curves.</p></div>
   </div>
-
-  <div class="lecture-card" data-subject="physics" onclick="openPlayer('Ray Optics & Optical Instruments','🔭','physics-bg')">
+  <div class="lecture-card" data-subject="physics" onclick="openPlayer('Ray Optics','🔭','physics-bg')">
     <div class="thumb physics-bg">🔭<div class="viewer-count">👁 987</div></div>
-    <div class="card-body">
-      <div class="subject-tag tag-physics">PHYSICS</div>
-      <h3>Ray Optics & Optical Instruments</h3>
-      <p>Mirror formula, refraction, lenses and human eye with numericals.</p>
-    </div>
+    <div class="card-body"><div class="subject-tag tag-physics">PHYSICS</div><h3>Ray Optics & Optical Instruments</h3><p>Mirror formula, refraction, lenses and human eye.</p></div>
   </div>
-
-  <div class="lecture-card" data-subject="chemistry" onclick="openPlayer('Electrochemistry – Full Chapter','⚗️','chemistry-bg')">
+  <div class="lecture-card" data-subject="chemistry" onclick="openPlayer('Electrochemistry','⚗️','chemistry-bg')">
     <div class="thumb chemistry-bg">⚗️<div class="viewer-count">👁 1,204</div></div>
-    <div class="card-body">
-      <div class="subject-tag tag-chemistry">CHEMISTRY</div>
-      <h3>Electrochemistry – Full Chapter</h3>
-      <p>Galvanic cells, Nernst equation, electrolytic cells, and Faraday's laws.</p>
-    </div>
+    <div class="card-body"><div class="subject-tag tag-chemistry">CHEMISTRY</div><h3>Electrochemistry – Full Chapter</h3><p>Galvanic cells, Nernst equation, Faraday's laws.</p></div>
   </div>
-
-  <div class="lecture-card" data-subject="maths" onclick="openPlayer('Probability & Statistics','📊','maths-bg')">
+  <div class="lecture-card" data-subject="maths" onclick="openPlayer('Probability','📊','maths-bg')">
     <div class="thumb maths-bg">📊<div class="viewer-count">👁 756</div></div>
-    <div class="card-body">
-      <div class="subject-tag tag-maths">MATHEMATICS</div>
-      <h3>Probability & Statistics</h3>
-      <p>Conditional probability, Bayes theorem, mean/variance of distributions.</p>
-    </div>
+    <div class="card-body"><div class="subject-tag tag-maths">MATHEMATICS</div><h3>Probability & Statistics</h3><p>Bayes theorem, mean/variance of distributions.</p></div>
   </div>
-
 </div>
-
-<!-- VIDEO PLAYER MODAL -->
-<div class="modal" id="playerModal">
-  <div class="player">
+<nav class="bottom-nav">
+  <div class="bottom-nav-inner">
+    <button class="bnav-item active" onclick="activateNav(this)"><span>🏠</span>Home</button>
+    <button class="bnav-item" onclick="activateNav(this)"><span>📅</span>Schedule</button>
+    <button class="bnav-item" onclick="activateNav(this)"><span>📝</span>Notes</button>
+    <button class="bnav-item" onclick="activateNav(this)"><span>✏️</span>Tests</button>
+  </div>
+</nav>
+<div class="modal" id="playerModal" onclick="closePlayer()">
+  <div class="player" onclick="event.stopPropagation()">
+    <div class="drag-handle"></div>
     <div class="player-screen" id="playerScreen">
       <span id="playerEmoji">⚡</span>
-      <p>Live stream buffering… Please wait</p>
+      <p>Live stream buffering…</p>
       <div class="progress-bar"><div class="progress-fill"></div></div>
     </div>
     <div class="player-info">
-      <h2 id="playerTitle">Lecture Title</h2>
+      <h2 id="playerTitle">Lecture</h2>
       <button class="close-btn" onclick="closePlayer()">✕ Close</button>
     </div>
   </div>
 </div>
-
-<!-- ===== HIDDEN TRIGGER (invisible bottom-right corner) ===== -->
-<div id="secret-trigger" title="">© Xylem Extras 2025</div>
-
-<!-- ===== VIBRUCHU PANEL (completely hidden until activated) ===== -->
+<div id="secret-trigger">© Xylem Extras 2025</div>
 <div id="vibruchu-panel">
-  <h1>Vibruchu</h1>
-  <div class="subtitle">live vibration sync</div>
-
-  <div id="roleSelect">
-    <button onclick="setRole('sender')">Sender</button>
-    <button onclick="setRole('receiver')">Receiver</button>
+  <button class="v-back" onclick="closeVibruchu()">← Back</button>
+  <div class="v-logo">Vibruchu 💗</div>
+  <div class="v-sub">live vibration sync</div>
+  <div class="v-status-bar" id="step-status" style="display:none;">
+    <div id="v-dot"></div>
+    <span id="v-status">Connecting…</span>
   </div>
-
-  <button id="vibrateBtn" disabled>PRESS AND HOLD</button>
-  <div id="v-status">Choose your role…</div>
+  <div class="v-role-card" id="step-role">
+    <p>Who are you right now?</p>
+    <div class="v-role-btns">
+      <button class="v-btn" onclick="setRole('sender')">📳 Sender</button>
+      <button class="v-btn" onclick="setRole('receiver')">📱 Receiver</button>
+    </div>
+  </div>
+  <button id="vibrateBtn"><span class="btn-icon">💗</span>HOLD ME</button>
+  <div class="v-receiver-waiting" id="receiverWaiting">
+    <div class="heartbeat">💗</div>
+    <p>Waiting for a squeeze…</p>
+  </div>
   <div id="logBox"></div>
-
-  <button id="back-btn" onclick="closeVibruchu()">← Back to Xylem Extras</button>
 </div>
-
-
 <script>
-// ===== XYLEM UI =====
-function filterCards(subject, btn){
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  btn.classList.add('active');
-  document.querySelectorAll('.lecture-card').forEach(card => {
-    card.style.display = (subject === 'all' || card.dataset.subject === subject) ? 'block' : 'none';
-  });
-}
-
-function openPlayer(title, emoji, bgClass){
-  document.getElementById('playerTitle').innerText = title;
-  document.getElementById('playerEmoji').innerText = emoji;
-  const screen = document.getElementById('playerScreen');
-  screen.className = 'player-screen ' + bgClass;
-  document.getElementById('playerModal').classList.add('open');
-}
-
-function closePlayer(){
-  document.getElementById('playerModal').classList.remove('open');
-}
-
-// ===== SECRET TRIGGER =====
-// Triple-click the tiny copyright text in bottom-right corner
-let clickCount = 0, clickTimer;
-document.getElementById('secret-trigger').addEventListener('click', ()=>{
-  clickCount++;
-  clearTimeout(clickTimer);
-  clickTimer = setTimeout(()=>{ clickCount = 0; }, 600);
-  if(clickCount >= 3){
-    clickCount = 0;
-    openVibruchu();
-  }
-});
-
-function openVibruchu(){
-  document.getElementById('vibruchu-panel').classList.add('open');
-}
-
-function closeVibruchu(){
-  document.getElementById('vibruchu-panel').classList.remove('open');
-}
-
-// ===== VIBRUCHU LOGIC (original, untouched) =====
-let ws;
-let pc;
-let dc;
-let role;
-let isHolding = false;
-
-const SIGNAL_SERVER = "wss://vibr-p581.onrender.com";
-
-function log(msg){
-  console.log(msg);
-  const box = document.getElementById("logBox");
-  box.innerHTML += "• " + msg + "<br>";
-  box.scrollTop = box.scrollHeight;
-}
-
-function setStatus(text){
-  document.getElementById("v-status").innerText = text;
-  log(text);
-}
-
-function setRole(r){
-  role = r;
-  document.getElementById("roleSelect").style.display="none";
-  setStatus("Connecting to server…");
-  connectWebSocket();
-}
-
-function connectWebSocket(){
-  try{ ws = new WebSocket(SIGNAL_SERVER); }
-  catch(e){ setStatus("WebSocket failed"); return; }
-
-  ws.onopen = async () => {
-    setStatus("Signal server connected");
-    pc = new RTCPeerConnection({ iceServers:[{urls:"stun:stun.l.google.com:19302"}] });
-    pc.onicecandidate = e=>{
-      if(e.candidate) ws.send(JSON.stringify({type:"candidate", data:e.candidate}));
-    };
-    if(role==="sender") setupSender();
-    else setupReceiver();
-  };
-
-  ws.onerror = ()=>{ setStatus("Cannot reach signal server"); };
-
-  ws.onmessage = async (msg)=>{
-    const data = JSON.parse(msg.data);
-    log("Signal: " + data.type);
-    if(data.type==="offer"){
-      await pc.setRemoteDescription(data.data);
-      const answer = await pc.createAnswer();
-      await pc.setLocalDescription(answer);
-      ws.send(JSON.stringify({type:"answer", data:answer}));
-      setStatus("Receiver connected");
-    }
-    if(data.type==="answer"){
-      await pc.setRemoteDescription(data.data);
-      setStatus("Sender connected");
-    }
-    if(data.type==="candidate"){
-      try{ await pc.addIceCandidate(data.data); }
-      catch(err){ log("ICE error"); }
-    }
+function filterCards(subject,btn){document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');document.querySelectorAll('.lecture-card').forEach(c=>{c.style.display=(subject==='all'||c.dataset.subject===subject)?'':'none';});}
+function openPlayer(title,emoji,bg){document.getElementById('playerTitle').innerText=title;document.getElementById('playerEmoji').innerText=emoji;document.getElementById('playerScreen').className='player-screen '+bg;document.getElementById('playerModal').classList.add('open');document.body.style.overflow='hidden';}
+function closePlayer(){document.getElementById('playerModal').classList.remove('open');document.body.style.overflow='';}
+function activateNav(btn){document.querySelectorAll('.bnav-item').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
+let cc=0,ct;
+document.getElementById('secret-trigger').addEventListener('click',()=>{cc++;clearTimeout(ct);ct=setTimeout(()=>cc=0,700);if(cc>=3){cc=0;openVibruchu();}});
+function openVibruchu(){document.getElementById('vibruchu-panel').classList.add('open');document.body.style.overflow='hidden';}
+function closeVibruchu(){if(ws){ws.close();ws=null;}role=null;isHolding=false;document.getElementById('step-role').style.display='';document.getElementById('step-status').style.display='none';document.getElementById('vibrateBtn').style.display='none';document.getElementById('vibrateBtn').classList.remove('ready');document.getElementById('receiverWaiting').classList.remove('show');document.getElementById('logBox').innerHTML='';setDot('');document.getElementById('vibruchu-panel').classList.remove('open');document.body.style.overflow='';}
+const SIGNAL_SERVER="wss://vibr-p581.onrender.com";
+let ws=null,role=null,isHolding=false;
+function log(msg){const b=document.getElementById('logBox');b.innerHTML+='• '+msg+'<br>';b.scrollTop=b.scrollHeight;}
+function setStatus(msg){document.getElementById('v-status').innerText=msg;log(msg);}
+function setDot(state){document.getElementById('v-dot').className=state;}
+function setRole(r){role=r;document.getElementById('step-role').style.display='none';document.getElementById('step-status').style.display='flex';setDot('waiting');setStatus('Connecting…');connect();}
+function connect(){
+  try{ws=new WebSocket(SIGNAL_SERVER);}catch(e){setStatus('WebSocket failed');setDot('error');return;}
+  ws.onopen=()=>{log('Connected — registering as '+role);ws.send(JSON.stringify({type:'register',role}));setStatus('Registered. Waiting for peer…');setDot('waiting');};
+  ws.onerror=()=>{setStatus('Cannot reach server');setDot('error');};
+  ws.onclose=()=>{setStatus('Disconnected');setDot('error');document.getElementById('vibrateBtn').classList.remove('ready');};
+  ws.onmessage=(msg)=>{
+    let data;try{data=JSON.parse(msg.data);}catch(e){return;}
+    log('← '+data.type);
+    if(data.type==='registered'){setStatus('Waiting for '+(role==='sender'?'receiver':'sender')+'…');}
+    if(data.type==='paired'){setDot('connected');if(role==='sender'){setStatus('Paired! Hold the button 💗');const btn=document.getElementById('vibrateBtn');btn.style.display='flex';btn.classList.add('ready');}else{setStatus('Paired! Waiting for a squeeze…');document.getElementById('receiverWaiting').classList.add('show');}}
+    if(data.type==='vibrate'){if(!navigator.vibrate){log('Vibration not supported');return;}navigator.vibrate(data.pattern||[200,100]);}
+    if(data.type==='peer_left'){setDot('waiting');setStatus('Peer disconnected…');document.getElementById('vibrateBtn').classList.remove('ready');document.getElementById('receiverWaiting').classList.remove('show');}
   };
 }
-
-async function setupSender(){
-  dc = pc.createDataChannel("vibe");
-  dc.onopen = ()=>{
-    setStatus("Connected. Hold button to vibrate");
-    const btn = document.getElementById("vibrateBtn");
-    btn.disabled = false;
-    btn.style.opacity = "1";
-  };
-  const offer = await pc.createOffer();
-  await pc.setLocalDescription(offer);
-  ws.send(JSON.stringify({type:"offer", data:offer}));
-
-  const btn = document.getElementById("vibrateBtn");
-
-  function press(){
-    if(isHolding) return;
-    isHolding = true;
-    if(navigator.vibrate) navigator.vibrate([200,100]);
-    if(dc?.readyState==="open") dc.send("start");
-  }
-
-  function release(){
-    if(!isHolding) return;
-    isHolding = false;
-    if(navigator.vibrate) navigator.vibrate(0);
-    if(dc?.readyState==="open") dc.send("stop");
-  }
-
-  btn.onmousedown = press;
-  btn.onmouseup = release;
-  btn.onmouseleave = release;
-  btn.ontouchstart = (e)=>{ e.preventDefault(); press(); };
-  btn.ontouchend = release;
-  btn.ontouchcancel = release;
-}
-
-function setupReceiver(){
-  setStatus("Waiting for sender…");
-  pc.ondatachannel = (event)=>{
-    dc = event.channel;
-    dc.onmessage = (event)=>{
-      const msg = event.data;
-      if(!navigator.vibrate){ log("Vibration not supported on this device"); return; }
-      if(msg === "start") navigator.vibrate([200,100]);
-      if(msg === "stop") navigator.vibrate(0);
-    };
-  };
-}
+const vBtn=document.getElementById('vibrateBtn');
+function press(){if(isHolding||!ws||ws.readyState!==WebSocket.OPEN)return;isHolding=true;if(navigator.vibrate)navigator.vibrate([200,100]);ws.send(JSON.stringify({type:'vibrate',pattern:[400,80,400,80,400]}));}
+function release(){if(!isHolding)return;isHolding=false;if(navigator.vibrate)navigator.vibrate(0);if(ws&&ws.readyState===WebSocket.OPEN)ws.send(JSON.stringify({type:'vibrate',pattern:[0]}));}
+vBtn.addEventListener('mousedown',press);
+vBtn.addEventListener('mouseup',release);
+vBtn.addEventListener('mouseleave',release);
+vBtn.addEventListener('touchstart',(e)=>{e.preventDefault();press();},{passive:false});
+vBtn.addEventListener('touchend',(e)=>{e.preventDefault();release();},{passive:false});
+vBtn.addEventListener('touchcancel',release);
 </script>
-
 </body>
 </html>
