@@ -90,16 +90,15 @@ button:active{
 <div id="logBox"></div>
 
 <script>
+// ===== VIBRUCHU LOGIC =====
 let ws;
-let pc;
-let dc;
 let role;
 let isHolding = false;
 
-// === YOUR SIGNAL SERVER ===
-const SIGNAL_SERVER = "wss://vibr-r7w1.onrender.com";
+const SIGNAL_SERVER = "wss://vibr-p581.onrender.com";
+const SENDER_ID = "sender";
+const RECEIVER_ID = "receiver";
 
-// ===== logger =====
 function log(msg){
   console.log(msg);
   const box = document.getElementById("logBox");
@@ -108,156 +107,87 @@ function log(msg){
 }
 
 function setStatus(text){
-  document.getElementById("status").innerText = text;
+  document.getElementById("v-status").innerText = text;
   log(text);
 }
 
 function setRole(r){
   role = r;
-  document.getElementById("roleSelect").style.display="none";
+  document.getElementById("roleSelect").style.display = "none";
   setStatus("Connecting to server…");
   connectWebSocket();
 }
 
 function connectWebSocket(){
-  try{
-    ws = new WebSocket(SIGNAL_SERVER);
-  }catch(e){
-    setStatus("WebSocket failed");
-    return;
-  }
+  try { ws = new WebSocket(SIGNAL_SERVER); }
+  catch(e){ setStatus("WebSocket failed"); return; }
 
-  ws.onopen = async () => {
-    setStatus("Signal server connected");
+  ws.onopen = () => {
+    // Register with the server using this role as userId
+    ws.send(JSON.stringify({ type: "register", userId: role }));
+    setStatus("Connected. Waiting for peer…");
 
-    pc = new RTCPeerConnection({
-      iceServers:[{urls:"stun:stun.l.google.com:19302"}]
-    });
-
-    pc.onicecandidate = e=>{
-      if(e.candidate){
-        ws.send(JSON.stringify({type:"candidate", data:e.candidate}));
-      }
-    };
-
-    if(role==="sender"){
-      setupSender();
-    }else{
-      setupReceiver();
-    }
+    if(role === "sender") setupSender();
+    else setupReceiver();
   };
 
-  ws.onerror = ()=>{
-    setStatus("Cannot reach signal server");
-  };
+  ws.onerror = () => { setStatus("Cannot reach signal server"); };
 
-  ws.onmessage = async (msg)=>{
+  ws.onmessage = (msg) => {
     const data = JSON.parse(msg.data);
-    log("Signal: " + data.type);
+    log("Got: " + data.type);
 
-    if(data.type==="offer"){
-      await pc.setRemoteDescription(data.data);
-      const answer = await pc.createAnswer();
-      await pc.setLocalDescription(answer);
-      ws.send(JSON.stringify({type:"answer", data:answer}));
-      setStatus("Receiver connected");
+    if(data.type === "vibrate"){
+      // Receiver gets vibration commands directly (no WebRTC needed)
+      if(!navigator.vibrate){ log("Vibration not supported"); return; }
+      navigator.vibrate(data.pattern || [200, 100]);
     }
 
-    if(data.type==="answer"){
-      await pc.setRemoteDescription(data.data);
-      setStatus("Sender connected");
-    }
-
-    if(data.type==="candidate"){
-      try{
-        await pc.addIceCandidate(data.data);
-      }catch(err){
-        log("ICE error");
-      }
+    if(data.type === "stop"){
+      if(navigator.vibrate) navigator.vibrate(0);
     }
   };
 }
 
-async function setupSender(){
-  dc = pc.createDataChannel("vibe");
-
-  dc.onopen = ()=>{
-    setStatus("Connected. Hold button to vibrate");
-    const btn = document.getElementById("vibrateBtn");
-    btn.disabled = false;
-    btn.style.opacity = "1";
-  };
-
-  const offer = await pc.createOffer();
-  await pc.setLocalDescription(offer);
-  ws.send(JSON.stringify({type:"offer", data:offer}));
-
+function setupSender(){
   const btn = document.getElementById("vibrateBtn");
+  btn.disabled = false;
+  btn.style.opacity = "1";
+  setStatus("Ready. Hold button to vibrate receiver.");
 
-  // ---- PRESS ----
   function press(){
     if(isHolding) return;
     isHolding = true;
-
-    // sender vibrates locally
-    if(navigator.vibrate){
-      navigator.vibrate([200,100]);
-    }
-
-    if(dc?.readyState==="open"){
-      dc.send("start");
-    }
+    if(navigator.vibrate) navigator.vibrate([200, 100]);
+    // Send vibrate command to receiver via server
+    ws.send(JSON.stringify({
+      type: "vibrate",
+      to: RECEIVER_ID,
+      pattern: [200, 100]
+    }));
   }
 
-  // ---- RELEASE ----
   function release(){
     if(!isHolding) return;
     isHolding = false;
-
-    // stop local vibration
-    if(navigator.vibrate){
-      navigator.vibrate(0);
-    }
-
-    if(dc?.readyState==="open"){
-      dc.send("stop");
-    }
+    if(navigator.vibrate) navigator.vibrate(0);
+    ws.send(JSON.stringify({
+      type: "stop",
+      to: RECEIVER_ID
+    }));
   }
 
-  // mouse
   btn.onmousedown = press;
   btn.onmouseup = release;
   btn.onmouseleave = release;
-
-  // touch
-  btn.ontouchstart = (e)=>{ e.preventDefault(); press(); };
+  btn.ontouchstart = (e) => { e.preventDefault(); press(); };
   btn.ontouchend = release;
   btn.ontouchcancel = release;
 }
 
 function setupReceiver(){
-  setStatus("Waiting for sender…");
-
-  pc.ondatachannel = (event)=>{
-    dc = event.channel;
-
-    dc.onmessage = (event)=>{
-      const msg = event.data;
-
-      if(!navigator.vibrate){
-        log("Vibration not supported on this device");
-        return;
-      }
-
-      if(msg === "start"){
-        navigator.vibrate([200,100]);
-      }
-
-      if(msg === "stop"){
-        navigator.vibrate(0);
-      }
-    };
-  };
+  setStatus("Waiting for sender to press…");
+  // Receiver just listens — ws.onmessage handles everything
 }
 </script>
 
