@@ -2,28 +2,359 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Vibruchur</title>
+<title>Xylem Extras – Live Lectures</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
 
 <style>
+:root{
+  --bg:#0d1117;
+  --card:#161b22;
+  --border:#21262d;
+  --accent:#2ecc71;
+  --accent2:#27ae60;
+  --text:#e6edf3;
+  --muted:#7d8590;
+  --red:#e74c3c;
+  --blue:#3498db;
+  --yellow:#f1c40f;
+}
+
+*{box-sizing:border-box;margin:0;padding:0;}
+
 body{
-  font-family: "Comic Sans MS", Arial, sans-serif;
-  text-align:center;
-  padding:30px;
-  background:#ffd6e7;
-  color:#6b4a5a;
+  font-family:'DM Sans',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
 }
 
-h1{
+/* ---- NAVBAR ---- */
+nav{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:14px 36px;
+  border-bottom:1px solid var(--border);
+  background:#0d1117ee;
+  position:sticky;top:0;z-index:100;
+  backdrop-filter:blur(10px);
+}
+
+.logo{
+  font-family:'Sora',sans-serif;
+  font-size:22px;
+  font-weight:700;
+  color:var(--accent);
+  letter-spacing:-0.5px;
+}
+
+.logo span{color:var(--text);}
+
+nav ul{
+  list-style:none;
+  display:flex;
+  gap:28px;
+}
+
+nav ul li a{
+  color:var(--muted);
+  text-decoration:none;
+  font-size:14px;
+  transition:color 0.2s;
+}
+
+nav ul li a:hover{color:var(--text);}
+
+.live-badge{
+  background:var(--red);
+  color:#fff;
+  font-size:11px;
+  font-weight:700;
+  padding:3px 8px;
+  border-radius:4px;
+  letter-spacing:1px;
+  animation:pulse 2s infinite;
+}
+
+@keyframes pulse{
+  0%,100%{opacity:1;}
+  50%{opacity:0.6;}
+}
+
+/* ---- HERO ---- */
+.hero{
+  padding:60px 36px 40px;
+  max-width:1100px;
+  margin:0 auto;
+}
+
+.hero h1{
+  font-family:'Sora',sans-serif;
   font-size:42px;
-  margin-bottom:10px;
+  font-weight:700;
+  line-height:1.15;
+  margin-bottom:14px;
 }
 
-.subtitle{
-  opacity:0.7;
-  margin-bottom:25px;
+.hero h1 em{
+  color:var(--accent);
+  font-style:normal;
 }
 
-button{
+.hero p{
+  color:var(--muted);
+  font-size:16px;
+  max-width:520px;
+  line-height:1.7;
+}
+
+/* ---- SUBJECT TABS ---- */
+.tabs{
+  display:flex;
+  gap:10px;
+  padding:0 36px;
+  max-width:1100px;
+  margin:30px auto 0;
+}
+
+.tab{
+  padding:9px 22px;
+  border-radius:8px;
+  font-size:14px;
+  font-weight:500;
+  border:1px solid var(--border);
+  background:transparent;
+  color:var(--muted);
+  cursor:pointer;
+  transition:all 0.2s;
+}
+
+.tab.active, .tab:hover{
+  border-color:var(--accent);
+  color:var(--accent);
+  background:#2ecc7115;
+}
+
+.tab.physics.active{border-color:var(--blue);color:var(--blue);background:#3498db15;}
+.tab.chemistry.active{border-color:var(--yellow);color:var(--yellow);background:#f1c40f15;}
+.tab.maths.active{border-color:var(--accent);color:var(--accent);background:#2ecc7115;}
+
+/* ---- LECTURE GRID ---- */
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
+  gap:18px;
+  padding:28px 36px;
+  max-width:1100px;
+  margin:0 auto;
+}
+
+.lecture-card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:14px;
+  overflow:hidden;
+  cursor:pointer;
+  transition:transform 0.2s, border-color 0.2s;
+}
+
+.lecture-card:hover{
+  transform:translateY(-3px);
+  border-color:#444;
+}
+
+.thumb{
+  width:100%;
+  height:165px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:52px;
+  position:relative;
+}
+
+.thumb.physics-bg{background:linear-gradient(135deg,#0d2137,#1a3a5c);}
+.thumb.chemistry-bg{background:linear-gradient(135deg,#1a1a00,#3a3a00);}
+.thumb.maths-bg{background:linear-gradient(135deg,#0d2214,#1a4a2a);}
+
+.live-dot{
+  position:absolute;
+  top:10px;left:10px;
+  background:var(--red);
+  color:#fff;
+  font-size:10px;
+  font-weight:700;
+  padding:3px 8px;
+  border-radius:4px;
+  letter-spacing:1px;
+}
+
+.viewer-count{
+  position:absolute;
+  bottom:10px;right:10px;
+  background:#00000088;
+  color:#fff;
+  font-size:11px;
+  padding:3px 8px;
+  border-radius:4px;
+}
+
+.card-body{
+  padding:16px;
+}
+
+.card-body h3{
+  font-family:'Sora',sans-serif;
+  font-size:15px;
+  font-weight:600;
+  margin-bottom:5px;
+}
+
+.card-body p{
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.6;
+}
+
+.subject-tag{
+  display:inline-block;
+  font-size:10px;
+  font-weight:700;
+  padding:2px 8px;
+  border-radius:4px;
+  margin-bottom:8px;
+  letter-spacing:0.5px;
+}
+
+.tag-physics{background:#3498db22;color:var(--blue);}
+.tag-chemistry{background:#f1c40f22;color:var(--yellow);}
+.tag-maths{background:#2ecc7122;color:var(--accent);}
+
+/* ---- VIDEO PLAYER MODAL ---- */
+.modal{
+  display:none;
+  position:fixed;inset:0;
+  background:#000000cc;
+  z-index:999;
+  align-items:center;
+  justify-content:center;
+}
+
+.modal.open{display:flex;}
+
+.player{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:20px;
+  width:min(750px,95vw);
+  overflow:hidden;
+}
+
+.player-screen{
+  width:100%;
+  height:380px;
+  background:#000;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:70px;
+  flex-direction:column;
+  gap:16px;
+  position:relative;
+}
+
+.player-screen p{
+  font-size:14px;
+  color:var(--muted);
+  font-family:'DM Sans',sans-serif;
+}
+
+.progress-bar{
+  width:90%;
+  height:4px;
+  background:#333;
+  border-radius:2px;
+  position:absolute;
+  bottom:20px;
+}
+
+.progress-fill{
+  height:100%;
+  background:var(--accent);
+  border-radius:2px;
+  width:37%;
+  animation:progress 20s linear infinite;
+}
+
+@keyframes progress{
+  0%{width:37%;}
+  100%{width:99%;}
+}
+
+.player-info{
+  padding:20px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.player-info h2{
+  font-family:'Sora',sans-serif;
+  font-size:17px;
+}
+
+.close-btn{
+  background:var(--border);
+  border:none;
+  color:var(--text);
+  font-size:14px;
+  padding:8px 18px;
+  border-radius:8px;
+  cursor:pointer;
+}
+
+/* ---- HIDDEN VIBRUCHU ZONE ---- */
+/* Disguised as a "copyright footer text" - triple-click to activate */
+#secret-trigger{
+  position:fixed;
+  bottom:18px;
+  right:20px;
+  font-size:10px;
+  color:#ffffff08;
+  cursor:default;
+  user-select:none;
+  z-index:10;
+}
+
+/* The real vibruchu panel */
+#vibruchu-panel{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:#ffd6e7;
+  z-index:9999;
+  font-family:"Comic Sans MS",Arial,sans-serif;
+  text-align:center;
+  padding:40px;
+  color:#6b4a5a;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+}
+
+#vibruchu-panel.open{display:flex;}
+
+#vibruchu-panel h1{font-size:42px;margin-bottom:8px;}
+#vibruchu-panel .subtitle{opacity:0.7;margin-bottom:25px;}
+
+#roleSelect{
+  background:#ffe4ef;
+  padding:20px;
+  border-radius:20px;
+  margin-bottom:16px;
+}
+
+#roleSelect button{
   padding:18px 34px;
   font-size:18px;
   margin:10px;
@@ -32,74 +363,234 @@ button{
   background:#ffb3d1;
   color:#6b4a5a;
   box-shadow:0 6px 0 #f48fb1;
+  cursor:pointer;
 }
 
-button:active{
+#roleSelect button:active{
   transform:translateY(3px);
   box-shadow:0 3px 0 #f48fb1;
 }
 
 #vibrateBtn{
-  display:block;
-  margin:20px auto;
-  background:#ff8fb8;
-  font-weight:bold;
-  opacity:0.5;
-}
-
-.card{
-  background:#ffe4ef;
-  padding:20px;
+  padding:18px 34px;
+  font-size:18px;
   border-radius:20px;
-  margin-top:20px;
+  border:none;
+  background:#ff8fb8;
+  color:#6b4a5a;
+  font-weight:bold;
+  box-shadow:0 6px 0 #f48fb1;
+  cursor:pointer;
+  opacity:0.5;
+  margin:10px;
 }
 
-#status{
-  margin-top:10px;
-  font-weight:bold;
+#vibrateBtn:active{
+  transform:translateY(3px);
+  box-shadow:0 3px 0 #f48fb1;
 }
+
+#v-status{margin-top:10px;font-weight:bold;}
 
 #logBox{
   margin-top:25px;
   background:#fff0f6;
   padding:12px;
   border-radius:15px;
-  height:170px;
+  height:130px;
   overflow:auto;
   text-align:left;
   font-size:12px;
   border:2px dashed #ffb3d1;
+  width:min(420px,90vw);
+}
+
+#back-btn{
+  margin-top:20px;
+  padding:10px 24px;
+  border-radius:14px;
+  border:none;
+  background:#ffb3d1;
+  color:#6b4a5a;
+  font-size:14px;
+  cursor:pointer;
+  box-shadow:0 4px 0 #f48fb1;
 }
 </style>
 </head>
 
 <body>
 
-<h1>Vibruchu</h1>
-<div class="subtitle">live vibration sync</div>
+<!-- ===== XYLEM EXTRAS UI ===== -->
+<nav>
+  <div class="logo">Xylem<span>Extras</span></div>
+  <ul>
+    <li><a href="#">Home</a></li>
+    <li><a href="#">Schedule</a></li>
+    <li><a href="#">Notes</a></li>
+    <li><a href="#">Tests</a></li>
+  </ul>
+  <span class="live-badge">● LIVE</span>
+</nav>
 
-<div id="roleSelect" class="card">
-  <button onclick="setRole('sender')">Sender</button>
-  <button onclick="setRole('receiver')">Receiver</button>
+<div class="hero">
+  <h1>Learn from the<br><em>best educators,</em> live.</h1>
+  <p>Stream Physics, Chemistry and Mathematics lectures in real-time. Ask doubts, revise chapters, and ace your exams.</p>
 </div>
 
-<button id="vibrateBtn" disabled>PRESS AND HOLD</button>
+<div class="tabs">
+  <button class="tab active" onclick="filterCards('all',this)">All</button>
+  <button class="tab physics" onclick="filterCards('physics',this)">⚡ Physics</button>
+  <button class="tab chemistry" onclick="filterCards('chemistry',this)">🧪 Chemistry</button>
+  <button class="tab maths" onclick="filterCards('maths',this)">∑ Mathematics</button>
+</div>
 
-<div id="status">Choose your role…</div>
+<div class="grid" id="lectureGrid">
 
-<div id="logBox"></div>
+  <div class="lecture-card" data-subject="physics" onclick="openPlayer('Electromagnetic Induction – Class XII','⚡','physics-bg')">
+    <div class="thumb physics-bg">⚡<div class="live-dot">LIVE</div><div class="viewer-count">👁 2,341</div></div>
+    <div class="card-body">
+      <div class="subject-tag tag-physics">PHYSICS</div>
+      <h3>Electromagnetic Induction – Class XII</h3>
+      <p>Faraday's law, Lenz's law, and self-inductance explained with derivations.</p>
+    </div>
+  </div>
+
+  <div class="lecture-card" data-subject="chemistry" onclick="openPlayer('Chemical Bonding & Molecular Structure','🧪','chemistry-bg')">
+    <div class="thumb chemistry-bg">🧪<div class="live-dot">LIVE</div><div class="viewer-count">👁 1,879</div></div>
+    <div class="card-body">
+      <div class="subject-tag tag-chemistry">CHEMISTRY</div>
+      <h3>Chemical Bonding & Molecular Structure</h3>
+      <p>VSEPR theory, hybridisation, and bond polarity with practice MCQs.</p>
+    </div>
+  </div>
+
+  <div class="lecture-card" data-subject="maths" onclick="openPlayer('Integrals – Definite & Indefinite','∫','maths-bg')">
+    <div class="thumb maths-bg">∫<div class="live-dot">LIVE</div><div class="viewer-count">👁 3,102</div></div>
+    <div class="card-body">
+      <div class="subject-tag tag-maths">MATHEMATICS</div>
+      <h3>Integrals – Definite & Indefinite</h3>
+      <p>Properties, substitution method, integration by parts and area under curves.</p>
+    </div>
+  </div>
+
+  <div class="lecture-card" data-subject="physics" onclick="openPlayer('Ray Optics & Optical Instruments','🔭','physics-bg')">
+    <div class="thumb physics-bg">🔭<div class="viewer-count">👁 987</div></div>
+    <div class="card-body">
+      <div class="subject-tag tag-physics">PHYSICS</div>
+      <h3>Ray Optics & Optical Instruments</h3>
+      <p>Mirror formula, refraction, lenses and human eye with numericals.</p>
+    </div>
+  </div>
+
+  <div class="lecture-card" data-subject="chemistry" onclick="openPlayer('Electrochemistry – Full Chapter','⚗️','chemistry-bg')">
+    <div class="thumb chemistry-bg">⚗️<div class="viewer-count">👁 1,204</div></div>
+    <div class="card-body">
+      <div class="subject-tag tag-chemistry">CHEMISTRY</div>
+      <h3>Electrochemistry – Full Chapter</h3>
+      <p>Galvanic cells, Nernst equation, electrolytic cells, and Faraday's laws.</p>
+    </div>
+  </div>
+
+  <div class="lecture-card" data-subject="maths" onclick="openPlayer('Probability & Statistics','📊','maths-bg')">
+    <div class="thumb maths-bg">📊<div class="viewer-count">👁 756</div></div>
+    <div class="card-body">
+      <div class="subject-tag tag-maths">MATHEMATICS</div>
+      <h3>Probability & Statistics</h3>
+      <p>Conditional probability, Bayes theorem, mean/variance of distributions.</p>
+    </div>
+  </div>
+
+</div>
+
+<!-- VIDEO PLAYER MODAL -->
+<div class="modal" id="playerModal">
+  <div class="player">
+    <div class="player-screen" id="playerScreen">
+      <span id="playerEmoji">⚡</span>
+      <p>Live stream buffering… Please wait</p>
+      <div class="progress-bar"><div class="progress-fill"></div></div>
+    </div>
+    <div class="player-info">
+      <h2 id="playerTitle">Lecture Title</h2>
+      <button class="close-btn" onclick="closePlayer()">✕ Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== HIDDEN TRIGGER (invisible bottom-right corner) ===== -->
+<div id="secret-trigger" title="">© Xylem Extras 2025</div>
+
+<!-- ===== VIBRUCHU PANEL (completely hidden until activated) ===== -->
+<div id="vibruchu-panel">
+  <h1>Vibruchu</h1>
+  <div class="subtitle">live vibration sync</div>
+
+  <div id="roleSelect">
+    <button onclick="setRole('sender')">Sender</button>
+    <button onclick="setRole('receiver')">Receiver</button>
+  </div>
+
+  <button id="vibrateBtn" disabled>PRESS AND HOLD</button>
+  <div id="v-status">Choose your role…</div>
+  <div id="logBox"></div>
+
+  <button id="back-btn" onclick="closeVibruchu()">← Back to Xylem Extras</button>
+</div>
+
 
 <script>
+// ===== XYLEM UI =====
+function filterCards(subject, btn){
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.lecture-card').forEach(card => {
+    card.style.display = (subject === 'all' || card.dataset.subject === subject) ? 'block' : 'none';
+  });
+}
+
+function openPlayer(title, emoji, bgClass){
+  document.getElementById('playerTitle').innerText = title;
+  document.getElementById('playerEmoji').innerText = emoji;
+  const screen = document.getElementById('playerScreen');
+  screen.className = 'player-screen ' + bgClass;
+  document.getElementById('playerModal').classList.add('open');
+}
+
+function closePlayer(){
+  document.getElementById('playerModal').classList.remove('open');
+}
+
+// ===== SECRET TRIGGER =====
+// Triple-click the tiny copyright text in bottom-right corner
+let clickCount = 0, clickTimer;
+document.getElementById('secret-trigger').addEventListener('click', ()=>{
+  clickCount++;
+  clearTimeout(clickTimer);
+  clickTimer = setTimeout(()=>{ clickCount = 0; }, 600);
+  if(clickCount >= 3){
+    clickCount = 0;
+    openVibruchu();
+  }
+});
+
+function openVibruchu(){
+  document.getElementById('vibruchu-panel').classList.add('open');
+}
+
+function closeVibruchu(){
+  document.getElementById('vibruchu-panel').classList.remove('open');
+}
+
+// ===== VIBRUCHU LOGIC (original, untouched) =====
 let ws;
 let pc;
 let dc;
 let role;
 let isHolding = false;
 
-// === YOUR SIGNAL SERVER ===
-const SIGNAL_SERVER = "wss://vibr-r7w1.onrender.com";
+const SIGNAL_SERVER = "wss://vibr-p581.onrender.com";
 
-// ===== logger =====
 function log(msg){
   console.log(msg);
   const box = document.getElementById("logBox");
@@ -108,7 +599,7 @@ function log(msg){
 }
 
 function setStatus(text){
-  document.getElementById("status").innerText = text;
+  document.getElementById("v-status").innerText = text;
   log(text);
 }
 
@@ -120,41 +611,24 @@ function setRole(r){
 }
 
 function connectWebSocket(){
-  try{
-    ws = new WebSocket(SIGNAL_SERVER);
-  }catch(e){
-    setStatus("WebSocket failed");
-    return;
-  }
+  try{ ws = new WebSocket(SIGNAL_SERVER); }
+  catch(e){ setStatus("WebSocket failed"); return; }
 
   ws.onopen = async () => {
     setStatus("Signal server connected");
-
-    pc = new RTCPeerConnection({
-      iceServers:[{urls:"stun:stun.l.google.com:19302"}]
-    });
-
+    pc = new RTCPeerConnection({ iceServers:[{urls:"stun:stun.l.google.com:19302"}] });
     pc.onicecandidate = e=>{
-      if(e.candidate){
-        ws.send(JSON.stringify({type:"candidate", data:e.candidate}));
-      }
+      if(e.candidate) ws.send(JSON.stringify({type:"candidate", data:e.candidate}));
     };
-
-    if(role==="sender"){
-      setupSender();
-    }else{
-      setupReceiver();
-    }
+    if(role==="sender") setupSender();
+    else setupReceiver();
   };
 
-  ws.onerror = ()=>{
-    setStatus("Cannot reach signal server");
-  };
+  ws.onerror = ()=>{ setStatus("Cannot reach signal server"); };
 
   ws.onmessage = async (msg)=>{
     const data = JSON.parse(msg.data);
     log("Signal: " + data.type);
-
     if(data.type==="offer"){
       await pc.setRemoteDescription(data.data);
       const answer = await pc.createAnswer();
@@ -162,74 +636,48 @@ function connectWebSocket(){
       ws.send(JSON.stringify({type:"answer", data:answer}));
       setStatus("Receiver connected");
     }
-
     if(data.type==="answer"){
       await pc.setRemoteDescription(data.data);
       setStatus("Sender connected");
     }
-
     if(data.type==="candidate"){
-      try{
-        await pc.addIceCandidate(data.data);
-      }catch(err){
-        log("ICE error");
-      }
+      try{ await pc.addIceCandidate(data.data); }
+      catch(err){ log("ICE error"); }
     }
   };
 }
 
 async function setupSender(){
   dc = pc.createDataChannel("vibe");
-
   dc.onopen = ()=>{
     setStatus("Connected. Hold button to vibrate");
     const btn = document.getElementById("vibrateBtn");
     btn.disabled = false;
     btn.style.opacity = "1";
   };
-
   const offer = await pc.createOffer();
   await pc.setLocalDescription(offer);
   ws.send(JSON.stringify({type:"offer", data:offer}));
 
   const btn = document.getElementById("vibrateBtn");
 
-  // ---- PRESS ----
   function press(){
     if(isHolding) return;
     isHolding = true;
-
-    // sender vibrates locally
-    if(navigator.vibrate){
-      navigator.vibrate([200,100]);
-    }
-
-    if(dc?.readyState==="open"){
-      dc.send("start");
-    }
+    if(navigator.vibrate) navigator.vibrate([200,100]);
+    if(dc?.readyState==="open") dc.send("start");
   }
 
-  // ---- RELEASE ----
   function release(){
     if(!isHolding) return;
     isHolding = false;
-
-    // stop local vibration
-    if(navigator.vibrate){
-      navigator.vibrate(0);
-    }
-
-    if(dc?.readyState==="open"){
-      dc.send("stop");
-    }
+    if(navigator.vibrate) navigator.vibrate(0);
+    if(dc?.readyState==="open") dc.send("stop");
   }
 
-  // mouse
   btn.onmousedown = press;
   btn.onmouseup = release;
   btn.onmouseleave = release;
-
-  // touch
   btn.ontouchstart = (e)=>{ e.preventDefault(); press(); };
   btn.ontouchend = release;
   btn.ontouchcancel = release;
@@ -237,25 +685,13 @@ async function setupSender(){
 
 function setupReceiver(){
   setStatus("Waiting for sender…");
-
   pc.ondatachannel = (event)=>{
     dc = event.channel;
-
     dc.onmessage = (event)=>{
       const msg = event.data;
-
-      if(!navigator.vibrate){
-        log("Vibration not supported on this device");
-        return;
-      }
-
-      if(msg === "start"){
-        navigator.vibrate([200,100]);
-      }
-
-      if(msg === "stop"){
-        navigator.vibrate(0);
-      }
+      if(!navigator.vibrate){ log("Vibration not supported on this device"); return; }
+      if(msg === "start") navigator.vibrate([200,100]);
+      if(msg === "stop") navigator.vibrate(0);
     };
   };
 }
