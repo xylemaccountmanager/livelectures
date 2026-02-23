@@ -1,22 +1,47 @@
 const WebSocket = require("ws");
 
-const wss = new WebSocket.Server({ port: 8080 });
+const PORT = process.env.PORT || 8080;
+const wss = new WebSocket.Server({ port: PORT });
 
-let clients = {};
+// Only 2 slots: sender and receiver
+let clients = {
+  sender: null,
+  receiver: null
+};
 
 wss.on("connection", (ws) => {
-  ws.on("message", (message) => {
-    const data = JSON.parse(message);
+  console.log("New connection");
 
+  ws.on("message", (message) => {
+    let data;
+    try { data = JSON.parse(message); }
+    catch(e) { return; }
+
+    // --- REGISTER ---
     if (data.type === "register") {
-      clients[data.userId] = ws;
-      console.log("Registered:", data.userId);
+      const role = data.role; // "sender" or "receiver"
+      if (role !== "sender" && role !== "receiver") return;
+
+      clients[role] = ws;
+      ws.role = role;
+      console.log(`Registered: ${role}`);
+      console.log(`Active clients: sender=${!!clients.sender} receiver=${!!clients.receiver}`);
+
+      // Tell this client their registration was acknowledged
+      ws.send(JSON.stringify({ type: "registered", role }));
+
+      // If both are now connected, notify both
+      if (clients.sender && clients.receiver) {
+        clients.sender.send(JSON.stringify({ type: "paired" }));
+        clients.receiver.send(JSON.stringify({ type: "paired" }));
+        console.log("Both paired!");
+      }
     }
 
+    // --- VIBRATE (sender -> receiver) ---
     if (data.type === "vibrate") {
-      const target = clients[data.to];
-      if (target) {
-        target.send(JSON.stringify({
+      if (clients.receiver && clients.receiver.readyState === WebSocket.OPEN) {
+        clients.receiver.send(JSON.stringify({
           type: "vibrate",
           pattern: data.pattern
         }));
@@ -25,12 +50,22 @@ wss.on("connection", (ws) => {
   });
 
   ws.on("close", () => {
-    for (let id in clients) {
-      if (clients[id] === ws) {
-        delete clients[id];
+    const role = ws.role;
+    if (role && clients[role] === ws) {
+      clients[role] = null;
+      console.log(`Disconnected: ${role}`);
+
+      // Notify the other side that peer left
+      const other = role === "sender" ? clients.receiver : clients.sender;
+      if (other && other.readyState === WebSocket.OPEN) {
+        other.send(JSON.stringify({ type: "peer_left" }));
       }
     }
   });
+
+  ws.on("error", (err) => {
+    console.error("WS error:", err.message);
+  });
 });
 
-console.log("WebSocket running...");
+console.log(`WebSocket server running on port ${PORT}`);
