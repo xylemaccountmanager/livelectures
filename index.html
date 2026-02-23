@@ -40,9 +40,11 @@ button:active{
 }
 
 #vibrateBtn{
-  display:none;
+  display:block;
+  margin:20px auto;
   background:#ff8fb8;
   font-weight:bold;
+  opacity:0.5;
 }
 
 .card{
@@ -62,7 +64,7 @@ button:active{
   background:#fff0f6;
   padding:12px;
   border-radius:15px;
-  height:160px;
+  height:170px;
   overflow:auto;
   text-align:left;
   font-size:12px;
@@ -73,15 +75,15 @@ button:active{
 
 <body>
 
-<h1>💖 Vibruchu</h1>
-<div class="subtitle">cute live vibration ✨</div>
+<h1>Vibruchu</h1>
+<div class="subtitle">live vibration sync</div>
 
 <div id="roleSelect" class="card">
-  <button onclick="setRole('sender')">📤 Sender</button>
-  <button onclick="setRole('receiver')">📥 Receiver</button>
+  <button onclick="setRole('sender')">Sender</button>
+  <button onclick="setRole('receiver')">Receiver</button>
 </div>
 
-<button id="vibrateBtn">💗 PRESS & HOLD 💗</button>
+<button id="vibrateBtn" disabled>PRESS AND HOLD</button>
 
 <div id="status">Choose your role…</div>
 
@@ -92,12 +94,11 @@ let ws;
 let pc;
 let dc;
 let role;
-let vibrateInterval;
 
-// ✅ YOUR SIGNAL SERVER
+// === YOUR SIGNAL SERVER ===
 const SIGNAL_SERVER = "wss://vibr-r7w1.onrender.com";
 
-// ===== logger (prints to screen) =====
+// ===== logger =====
 function log(msg){
   console.log(msg);
   const box = document.getElementById("logBox");
@@ -126,7 +127,7 @@ function connectWebSocket(){
   }
 
   ws.onopen = async () => {
-    setStatus("Signal server connected ✨");
+    setStatus("Signal server connected");
 
     pc = new RTCPeerConnection({
       iceServers:[{urls:"stun:stun.l.google.com:19302"}]
@@ -146,7 +147,7 @@ function connectWebSocket(){
   };
 
   ws.onerror = ()=>{
-    setStatus("❌ Cannot reach signal server");
+    setStatus("Cannot reach signal server");
   };
 
   ws.onmessage = async (msg)=>{
@@ -158,12 +159,12 @@ function connectWebSocket(){
       const answer = await pc.createAnswer();
       await pc.setLocalDescription(answer);
       ws.send(JSON.stringify({type:"answer", data:answer}));
-      setStatus("Receiver connected 💞");
+      setStatus("Receiver connected");
     }
 
     if(data.type==="answer"){
       await pc.setRemoteDescription(data.data);
-      setStatus("Sender connected 💞");
+      setStatus("Sender connected");
     }
 
     if(data.type==="candidate"){
@@ -180,8 +181,10 @@ async function setupSender(){
   dc = pc.createDataChannel("vibe");
 
   dc.onopen = ()=>{
-    setStatus("Connected! Hold to vibrate 💗");
-    document.getElementById("vibrateBtn").style.display="inline-block";
+    setStatus("Connected. Hold button to vibrate");
+    const btn = document.getElementById("vibrateBtn");
+    btn.disabled = false;
+    btn.style.opacity = "1";
   };
 
   const offer = await pc.createOffer();
@@ -196,6 +199,7 @@ async function setupSender(){
   btn.onmouseup = stopVibrate;
   btn.ontouchend = stopVibrate;
 }
+
 function startVibrate(){
   if(dc?.readyState==="open"){
     dc.send("start");
@@ -209,16 +213,25 @@ function stopVibrate(){
 }
 
 function setupReceiver(){
-  setStatus("Waiting for sender… 🐣");
+  setStatus("Waiting for sender…");
 
   pc.ondatachannel = (event)=>{
     dc = event.channel;
 
-    dc.onmessage = ()=>{
-      if(navigator.vibrate){
-        navigator.vibrate(150);
-      }else{
-        log("Vibration not supported");
+    dc.onmessage = (event)=>{
+      const msg = event.data;
+
+      if(!navigator.vibrate){
+        log("Vibration not supported on this device");
+        return;
+      }
+
+      if(msg === "start"){
+        navigator.vibrate([200, 100]);
+      }
+
+      if(msg === "stop"){
+        navigator.vibrate(0);
       }
     };
   };
