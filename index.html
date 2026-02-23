@@ -86,7 +86,6 @@ button:active{
 <button id="vibrateBtn" disabled>PRESS AND HOLD</button>
 
 <div id="status">Choose your role…</div>
-
 <div id="logBox"></div>
 
 <script>
@@ -94,8 +93,10 @@ let ws;
 let pc;
 let dc;
 let role;
+let sendingInterval = null;
+let localVibeInterval = null;
+let remoteVibeInterval = null;
 
-// === YOUR SIGNAL SERVER ===
 const SIGNAL_SERVER = "wss://vibr-r7w1.onrender.com";
 
 // ===== logger =====
@@ -177,6 +178,7 @@ function connectWebSocket(){
   };
 }
 
+// ===== SENDER =====
 async function setupSender(){
   dc = pc.createDataChannel("vibe");
 
@@ -197,21 +199,39 @@ async function setupSender(){
   btn.ontouchstart = startVibrate;
 
   btn.onmouseup = stopVibrate;
+  btn.onmouseleave = stopVibrate;
   btn.ontouchend = stopVibrate;
 }
 
+// continuous boops while holding
 function startVibrate(){
-  if(dc?.readyState==="open"){
-    dc.send("start");
+  if(dc?.readyState !== "open") return;
+
+  // send continuous signal
+  sendingInterval = setInterval(()=>{
+    dc.send("buzz");
+  }, 120);
+
+  // local vibration loop
+  if(navigator.vibrate){
+    localVibeInterval = setInterval(()=>{
+      navigator.vibrate(80);
+    }, 120);
   }
 }
 
 function stopVibrate(){
-  if(dc?.readyState==="open"){
+  clearInterval(sendingInterval);
+  clearInterval(localVibeInterval);
+
+  if(dc?.readyState === "open"){
     dc.send("stop");
   }
+
+  navigator.vibrate(0);
 }
 
+// ===== RECEIVER =====
 function setupReceiver(){
   setStatus("Waiting for sender…");
 
@@ -226,11 +246,17 @@ function setupReceiver(){
         return;
       }
 
-      if(msg === "start"){
-        navigator.vibrate([200, 100]);
+      if(msg === "buzz"){
+        if(!remoteVibeInterval){
+          remoteVibeInterval = setInterval(()=>{
+            navigator.vibrate(80);
+          }, 120);
+        }
       }
 
       if(msg === "stop"){
+        clearInterval(remoteVibeInterval);
+        remoteVibeInterval = null;
         navigator.vibrate(0);
       }
     };
